@@ -1,385 +1,591 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>මගේ වීඩියෝ ප්ලේයර්</title>
+    <title>Smooth Video Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f0f0f;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 15px;
         }
-        
+
         .container {
-            max-width: 800px;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            margin-top: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        
-        .player-title {
-            text-align: center;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.4);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .video-container {
-            position: relative;
-            width: 100%;
-            padding-top: 80.25%; /* 16:9 Aspect Ratio */
-        }
-        
-        #myVideo {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-        }
-        
-        .controls {
+
+        header {
             display: flex;
-            flex-wrap: wrap;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.4);
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff3366;
         }
-        
-        button {
-            background: #ff5500;
+
+        .theme-toggle {
+            background: #333;
             border: none;
             color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
             cursor: pointer;
-            transition: background 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.3rem;
         }
-        
-        button:hover {
-            background: #ff7730;
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
         }
-        
-        .play-btn {
-            background: #C0C0C0;
+
+        .video-container {
+            flex: 2;
+            min-width: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            background: #000;
         }
-        
-        .play-btn:hover {
-            background: #27ae60;
+
+        #main-video {
+            width: 100%;
+            display: block;
+            border-radius: 12px 12px 0 0;
         }
-        
-        .progress-container {
-            flex-grow: 1;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
+
+        .video-info {
+            padding: 15px;
+            background: #1a1a1a;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .video-info h1 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        .video-stats {
+            display: flex;
+            gap: 15px;
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .video-controls {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: #1a1a1a;
+            border-top: 1px solid #333;
+        }
+
+        .control-btn {
+            background: #333;
+            border: none;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
             cursor: pointer;
-            position: relative;
-        }
-        
-        .progress {
-            height: 50%;
-            background: #757575;
-            border-radius: 5px;
-            width: 0%;
-        }
-        
-        .time {
-            margin: 0 10px;
-            font-variant-numeric: tabular-nums;
-        }
-        
-        .volume-container {
             display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
+            font-size: 1.2rem;
         }
-        
-        input[type="range"] {
-            width: 80px;
-            cursor: pointer;
+
+        .control-btn:hover {
+            background: #ff3366;
+            transform: scale(1.1);
         }
-        
-        .playback-speed {
-            background: #0000FF;
-        }
-        
-        .fullscreen-btn {
-            background: #9b59b6;
-        }
-        
-        .fullscreen-btn:hover {
-            background: #8e44ad;
-        }
-        
-        .video-list {
-            margin-top: 20px;
-            width: 100%;
-            max-width: 800px;
-        }
-        
-        .video-list h3 {
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .video-items {
+
+        .progress-container {
+            flex-grow: 1;
             display: flex;
+            align-items: center;
             gap: 10px;
-            overflow-x: auto;
-            padding: 10px 0;
         }
-        
-        .video-item {
-            flex: 0 0 auto;
-            width: 120px;
-            cursor: pointer;
-            border-radius: 5px;
+
+        .progress-bar {
+            flex-grow: 1;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
             overflow: hidden;
-            opacity: 0.7;
-            transition: opacity 0.3s;
+            cursor: pointer;
         }
-        
+
+        .progress {
+            height: 100%;
+            background: #ff3366;
+            width: 65%;
+            border-radius: 3px;
+        }
+
+        .video-list {
+            flex: 1;
+            min-width: 300px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .video-list h2 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+            color: #ff3366;
+        }
+
+        .video-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #252525;
+        }
+
         .video-item:hover {
-            opacity: 1;
+            background: #333;
+            transform: translateX(5px);
         }
-        
-        .video-item.active {
-            opacity: 1;
-            box-shadow: 0 0 0 2px #ff5500;
+
+        .video-thumb {
+            width: 160px;
+            height: 90px;
+            border-radius: 6px;
+            overflow: hidden;
+            flex-shrink: 0;
         }
-        
-        .video-item img {
+
+        .video-thumb img {
             width: 100%;
-            height: 70px;
+            height: 100%;
             object-fit: cover;
         }
-        
-        .video-item p {
-            padding: 5px;
-            font-size: 12px;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.5);
+
+        .video-details {
+            flex-grow: 1;
         }
-        
-        @media (max-width: 600px) {
-            .controls {
+
+        .video-details h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .video-details p {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        /* Light mode styles */
+        body.light-mode {
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        body.light-mode .video-info,
+        body.light-mode .video-controls,
+        body.light-mode .video-list {
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .video-item {
+            background: #f8f9fa;
+        }
+
+        body.light-mode .video-item:hover {
+            background: #e9ecef;
+        }
+
+        body.light-mode .theme-toggle,
+        body.light-mode .control-btn {
+            background: #e4e6eb;
+            color: #333;
+        }
+
+        body.light-mode .progress-bar {
+            background: #e4e6eb;
+        }
+
+        body.light-mode header {
+            border-bottom: 1px solid #ddd;
+        }
+
+        body.light-mode .video-stats {
+            color: #666;
+        }
+
+        body.light-mode .video-details p {
+            color: #666;
+        }
+
+        /* Responsive design */
+        @media (max-width: 992px) {
+            .main-content {
                 flex-direction: column;
-                align-items: stretch;
+            }
+            
+            .video-list {
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .video-item {
+                flex-direction: column;
+            }
+            
+            .video-thumb {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 16/9;
+            }
+            
+            .video-controls {
+                flex-wrap: wrap;
+                justify-content: center;
             }
             
             .progress-container {
+                order: 3;
                 width: 100%;
             }
         }
+
+        /* Scrollbar styling */
+        .video-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .video-list::-webkit-scrollbar-thumb {
+            background: #ff3366;
+            border-radius: 4px;
+        }
+
+        body.light-mode .video-list::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Animation for video change */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
     </style>
 </head>
-<body>
-    <h3>PRON LAB MADE BY SL×BLACK SHADOW</h3>
-    <p>SRI LANKA VIP LEAK</p>
-    
+<body class="dark-mode">
     <div class="container">
-        <div class="player-title">
-            <h2 id="currentVideoTitle">SL×BLACK SHADOW </h2>
-        </div>
-        
-        <div class="video-container">
-            <video id="myVideo">
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-                ඔබේ බ්‍රවුසරය වීඩියෝව සහාය නොදක්වයි.
-            </video>
-        </div>
-        
-        <div class="controls">
-            <button id="playPauseBtn" class="play-btn">▶ Play</button>
-            <span class="time" id="currentTime">0:00</span>
-            <div class="progress-container" id="progressContainer">
-                <div class="progress" id="progress"></div>
-            </div>
-            <span class="time" id="duration">0:00</span>
-            
-            <div class="volume-container">
-                <span>SOUND</span>
-                <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
-            </div>
-            
-            <button id="speedBtn" class="playback-speed">1x</button>
-            <button id="fullscreenBtn" class="fullscreen-btn">⛶ FULL SCREEN</button>
-        </div>
-    </div>
-    
-    <div class="video-list">
-        <h3>OTHER VIDEOS</h3>
-        <div class="video-items">
-            <div class="video-item active" data-src="https://www.dropbox.com/scl/fi/dnksvyruflgs40vefwctq/video1.mp4?rlkey=nzd0y9lbpymbrd53mp1ss74io&st=z3ybdja1&dl=1" data-title="TESTING ANIMATION1">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 1">
-                <p>වීඩියෝව 1</p>
-            </div>
-            <div class="video-item" data-src="videos/video2.mp4" data-title="VIRUS VIDEO">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 2">
-                <p>වීඩියෝව 2</p>
-            </div>
-            <div class="video-item" data-src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" data-title="වීඩියෝව 3">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 3">
-                <p>NO INFORMATION </p>
-             
-               </div>  
-             <div class="video-item" data-src="videos/video4.mp4" data-title="🥹 නමක් දැම්මෙ නැ හුත්තො තවම">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 3">
-                <p>NO INFORMATION</p>   
-    
-    </div>  
-             <div class="video-item" data-src="videos/video5.mp4" data-title="no info">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 3">
-                <p>NO INFORMATION</p>   
-    
-    </div>  
-             <div class="video-item" data-src="videos/video6.mp4" data-title="no info">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 6">
-                <p>NO INFORMATION</p>   
-    
+        <header>
+            <div class="logo">
+                <i class="fas fa-play-circle"></i>
+                <span>SL × LEAK-HUB </span>
                 
-   </div>  
-             <div class="video-item" data-src="https://www.dropbox.com/scl/fi/xho4zx3kb7uduqskb4ke9/video10.mp4?rlkey=66fx1i1rp8euof1izgqgw7iz8&st=7s5obci5&dl=1" data-title="no info">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 3">
-                <p>NO INFORMATION</p>   
-    
-           </div>  
-             <div class="video-item" data-src="https://www.dropbox.com/scl/fi/waba10qweejmnqlvv38mb/video8.mp4?rlkey=ybpl115dpl0g6v5gkls00waqj&st=p4z68hih&dl=1" data-title="no info">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 3">
-                <p>NO INFORMATION</p>   
-                                                                        </div>  
-             <div class="video-item" data-src="https://www.dropbox.com/scl/fi/hqpu8rg9awdj8qbv7hx5c/video9.mp4?rlkey=507qd8gg7h69qi3yu7phdy236&st=rgj5xq06&dl=1" data-title="no info">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 3">
-                <p>NO INFORMATION</p>   
-    
-    </div>  
-             <div class="video-item" data-src="videos/video10.mp4" data-title="no info">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 3">
-                <p>NO INFORMATION</p>   
-    
-    </div>  
-             <div class="video-item" data-src="https://www.dropbox.com/scl/fi/l2m8bkripc6s0wou26lmf/video11.mp4?rlkey=9d4jfwg5u41hycgs4xrobku5q&st=zplskwt5&dl=1" data-title="no info">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 3">
-                <p>NO INFORMATION</p>   
-    
-    </div>  
-             <div class="video-item" data-src="https://www.dropbox.com/scl/fi/5z0g0msplnp9fi59w5xpd/video12.mp4?rlkey=nrhwlvwtsuftee5tjja18l99f&st=cldgy2zq&dl=1" data-title="no info">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 3">
-                <p>NO INFORMATION</p>   
-    
-    </div>  
-             <div class="video-item" data-src="videos/video13.mp4" data-title="no info">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 3">
-                <p>NO INFORMATION</p>   
-    
-    </div>  
-             <div class="video-item" data-src="videos/video14.mp4" data-title="no info">
-                <img src="https://backiee.com/static/wallpapers/560x315/287819.jpg" alt="Video 3">
-                <p>NO INFORMATION</p>   
-    
+             
+            </div>
+            <button class="theme-toggle" id="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+        
+        <div class="main-content">
+            <div class="video-container">
+                <video id="main-video" poster="https://i.ytimg.com/vi/1La4QzGeaaQ/hqdefault.jpg" controls>
+                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="video-info">
+                    <h1>SL LEAK HUB</h1>
+                    <div class="video-stats">
+                        <span>🙂😩 Single life තමයි ඉතිං</span>
+                        <span>SL×BLACK SHADOW</span>
+                    </div>
+                    <p>18+ Only.
+This website is strictly for adults. If you are under 18, you must leave now. </p> <br> <p> අවවාදයයි – 18+ අය සඳහා පමණි.
+ඔබේ වයස අවුරුදු 18 ට අඩු නම්, කරුණාකර ඉවත් වන්න.</p>
+                  <h4> SL×BLACK SHADOW MODz </h4>
+                </div>
+                <div class="video-controls">
+                    <button class="control-btn" id="play-pause">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="control-btn" id="mute">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                    <div class="progress-container">
+                        <span class="time">0:00</span>
+                        <div class="progress-bar">
+                            <div class="progress"></div>
+                        </div>
+                        <span class="time">10:34</span>
+                    </div>
+                    <button class="control-btn" id="fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="video-list">
+                <h2>Other Videos</h2>
+                
+                <div class="video-item" data-video="videos/data1.mp4" 
+                     data-title="Big Buck Bunny" data-duration="10:34" data-views="4.5M views">
+                    <div class="video-thumb">
+                        <img src="photo/data1.jpg" alt="Big Buck Bunny">
+                    </div>
+                    <div class="video-details">
+                        <h3>NO PROGRAM</h3>
+                        <p>SL×BLACK SHADOW • ? views</p>
+                    </div>
+                </div>
+                
+                <div class="video-item" data-video="videos/data2.mp4" 
+                     data-title="😩 අනෙ හුත්තො මට බෑ" data-duration="14:20" data-views="2.1M views">
+                    <div class="video-thumb">
+                        <img src="photo/data6.jpg" alt="Elephant Dream">
+                    </div>
+                    <div class="video-details">
+                        <h3>NO PROGRAM</h3>
+                        <p>SL×BLACK SHADOW • ? views</p>
+                    </div>
+                </div>
+                
+                <div class="video-item" data-video="videos/data3.mp4" 
+                     data-title="Cosmic Journey" data-duration="22:15" data-views="8.9M views">
+                    <div class="video-thumb">
+                        <img src="photo/data5.jpg" alt="Cosmic Journey">
+                    </div>
+                    <div class="video-details">
+                        <h3>NO PROGRAM</h3>
+                        <p>SL×BLACK SHADOW • ? views</p>
+                    </div>
+                </div>
+                
+                <div class="video-item" data-video="videos/data4.mp4" 
+                     data-title="අනෙ ඇති දැන් නවත්තන්න කො " data-duration="18:05" data-views="3.2M views">
+                    <div class="video-thumb">
+                        <img src="photo/data4.jpg" alt="Mountain Adventure">
+                    </div>
+                    <div class="video-details">
+                        <h3>NO PROGRAM</h3>
+                        <p>SL×BLACK SHADOW • ? views</p>
+                    </div>
+                </div>
+                
+                <div class="video-item" data-video="videos/data5.mp4" 
+                     data-title="Mountain Adventure" data-duration="18:05" data-views="3.2M views">
+                    <div class="video-thumb">
+                        <img src="photo/data.jpg" alt="Mountain Adventure">
+                    </div>
+                    <div class="video-details">
+                        <h3>NO PROGRAM</h3>
+                        <p>SL×BLACK SHADOW • ? views</p>
+                    </div>
+                </div>
+                
+                <div class="video-item" data-video="videos/data6.mp4" 
+                     data-title="Ocean Wonders" data-duration="15:22" data-views="5.7M views">
+                    <div class="video-thumb">
+                        <img src="photo/data3.jpg" alt="Ocean Wonders">
+                    </div>
+                    <div class="video-details">
+                        <h3>NO PROGRAM</h3>
+                        <p>SL×BLACK SHADOW • ? views</p>
+                    </div>
+                </div>
+                
+                <div class="video-item" data-video="videos/data14.mp4" 
+                     data-title="Desert Mirage" data-duration="12:45" data-views="2.8M views">
+                    <div class="video-thumb">
+                        <img src="photo/newfuck2.jpg" alt="Desert Mirage">
+                    </div>
+                    <div class="video-details">
+                        <h3>NO PROGRAM</h3>
+                        <p>SL×BLACK SHADOW • ? views</p>
+                        
+                        
+                     </div>
+                     </div>
+                     
+                        <div class="video-item" data-video="videos/data7.mp4" 
+                     data-title=" 18+ " data-duration="14:20" data-views="2.1M views">
+                    <div class="video-thumb">
+                        <img src="photo/newfuck.jpg" alt="Elephant Dream">
+                    </div>
+                    <div class="video-details">
+                        <h3>NO PROGRAM</h3>
+                        <p>SL×BLACK SHADOW • ? views</p>
+                    </div>
+                </div>
+                
+                
+                        </div>
+                     </div>
+                     
+                        <div class="video-item" data-video="videos/data8.mp4" 
+                     data-title=" 18+ " data-duration="14:20" data-views="2.1M views">
+                    <div class="video-thumb">
+                        <img src="photo/newfuck3.jpg" alt="Elephant Dream">
+                    </div>
+                    <div class="video-details">
+                        <h3>NO PROGRAM</h3>
+                        <p>SL×BLACK SHADOW • ? views</p>
+                    </div>
+                </div>
+                
+                
+                        <div class="video-item" data-video="videos/data10.mp4" 
+                     data-title=" 18+ " data-duration="14:20" data-views="2.1M views">
+                    <div class="video-thumb">
+                        <img src="photo/newfuck4.jpg" alt="Elephant Dream">
+                    </div>
+                    <div class="video-details">
+                        <h3>NO PROGRAM</h3>
+                        <p>SL×BLACK SHADOW • ? views</p>
+                    </div>
+                </div>
+                
+                
+                
+                     <div class="video-item" data-video="videos/data16.mp4" 
+                     data-title=" 18+ " data-duration="14:20" data-views="2.1M views">
+                    <div class="video-thumb">
+                        <img src="photo/newfuck5.jpg" alt="Elephant Dream">
+                    </div>
+                    <div class="video-details">
+                        <h3>NO PROGRAM</h3>
+                        <p>SL×BLACK SHADOW • ? views</p>
+                    </div>
+                </div>
+                
+                        
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // වීඩියෝ එලිමෙන්ට් ලබාගන්න
-            const video = document.getElementById('myVideo');
-            
-            // බට්නු සහ අනෙකුත් එලිමෙන්ට් ලබාගන්න
-            const playPauseBtn = document.getElementById('playPauseBtn');
-            const currentTimeElement = document.getElementById('currentTime');
-            const durationElement = document.getElementById('duration');
-            const progress = document.getElementById('progress');
-            const progressContainer = document.getElementById('progressContainer');
-            const volumeSlider = document.getElementById('volume');
-            const speedBtn = document.getElementById('speedBtn');
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            // Elements
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = themeToggle.querySelector('i');
+            const video = document.getElementById('main-video');
+            const playPauseBtn = document.getElementById('play-pause');
+            const playPauseIcon = playPauseBtn.querySelector('i');
+            const muteBtn = document.getElementById('mute');
+            const muteIcon = muteBtn.querySelector('i');
+            const fullscreenBtn = document.getElementById('fullscreen');
+            const progressBar = document.querySelector('.progress');
             const videoItems = document.querySelectorAll('.video-item');
-            const currentVideoTitle = document.getElementById('currentVideoTitle');
+            const videoTitle = document.querySelector('.video-info h1');
+            const videoStats = document.querySelector('.video-stats');
+            const timeDisplays = document.querySelectorAll('.time');
             
-            // වීඩියෝව පටන්ගන්න/නතර කිරීම
-            playPauseBtn.addEventListener('click', function() {
+            // Theme toggle functionality
+            themeToggle.addEventListener('click', function() {
+                if (body.classList.contains('dark-mode')) {
+                    body.classList.remove('dark-mode');
+                    body.classList.add('light-mode');
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                } else {
+                    body.classList.remove('light-mode');
+                    body.classList.add('dark-mode');
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                }
+                
+                // Save theme preference
+                localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+            });
+            
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+            
+            // Video controls functionality
+            playPauseBtn.addEventListener('click', togglePlayPause);
+            video.addEventListener('click', togglePlayPause);
+            
+            function togglePlayPause() {
                 if (video.paused) {
                     video.play();
-                    playPauseBtn.textContent = '❚❚ Pause';
-                    playPauseBtn.classList.remove('play-btn');
+                    playPauseIcon.classList.remove('fa-play');
+                    playPauseIcon.classList.add('fa-pause');
                 } else {
                     video.pause();
-                    playPauseBtn.textContent = '▶ Play';
-                    playPauseBtn.classList.add('play-btn');
+                    playPauseIcon.classList.remove('fa-pause');
+                    playPauseIcon.classList.add('fa-play');
                 }
-            });
+            }
             
-            // වීඩියෝවේ කාලය යාවත්කාලීන කිරීම
-            video.addEventListener('timeupdate', function() {
-                const currentTime = video.currentTime;
-                const duration = video.duration;
-                
-                // වත්මන් කාලය පෙන්වන්න
-                currentTimeElement.textContent = formatTime(currentTime);
-                
-                // ප්‍රගති තීරුව යාවත්කාලීන කරන්න
-                const progressPercent = (currentTime / duration) * 100;
-                progress.style.width = `${progressPercent}%`;
-            });
-            
-            // වීඩියෝව පටන්ගන්නා විට
-            video.addEventListener('loadedmetadata', function() {
-                durationElement.textContent = formatTime(video.duration);
-            });
-            
-            // ප්‍රගති තීරුව මත ක්ලික් කිරීමෙන් වීඩියෝවේ ස්ථානය වෙනස් කිරීම
-            progressContainer.addEventListener('click', function(e) {
-                const pos = (e.pageX - this.getBoundingClientRect().left) / this.offsetWidth;
-                video.currentTime = pos * video.duration;
-            });
-            
-            // ශබ්දය පාලනය කිරීම
-            volumeSlider.addEventListener('change', function() {
-                video.volume = this.value;
-            });
-            
-            // වීඩියෝවේ වේගය පාලනය කිරීම
-            speedBtn.addEventListener('click', function() {
-                let currentSpeed = video.playbackRate;
-                if (currentSpeed === 2) {
-                    video.playbackRate = 0.5;
-                    speedBtn.textContent = '0.5x';
-                } else if (currentSpeed === 0.5) {
-                    video.playbackRate = 1;
-                    speedBtn.textContent = '1x';
-                } else if (currentSpeed === 1) {
-                    video.playbackRate = 1.5;
-                    speedBtn.textContent = '1.5x';
+            // Mute functionality
+            muteBtn.addEventListener('click', function() {
+                if (video.muted) {
+                    video.muted = false;
+                    muteIcon.classList.remove('fa-volume-mute');
+                    muteIcon.classList.add('fa-volume-up');
                 } else {
-                    video.playbackRate = 2;
-                    speedBtn.textContent = '2x';
+                    video.muted = true;
+                    muteIcon.classList.remove('fa-volume-up');
+                    muteIcon.classList.add('fa-volume-mute');
                 }
             });
             
-            // පුළුල් තිර ක්රියාකාරිත්වය
+            // Fullscreen functionality
             fullscreenBtn.addEventListener('click', function() {
                 if (video.requestFullscreen) {
                     video.requestFullscreen();
@@ -390,32 +596,71 @@
                 }
             });
             
-            // වීඩියෝ ලැයිස්තුවෙන් වීඩියෝවක් තෝරාගැනීම
+            // Update progress bar and time
+            video.addEventListener('timeupdate', function() {
+                const value = (video.currentTime / video.duration) * 100;
+                progressBar.style.width = value + '%';
+                
+                // Update time displays
+                const currentMinutes = Math.floor(video.currentTime / 60);
+                const currentSeconds = Math.floor(video.currentTime % 60);
+                timeDisplays[0].textContent = `${currentMinutes}:${currentSeconds < 10 ? '0' : ''}${currentSeconds}`;
+                
+                const durationMinutes = Math.floor(video.duration / 60);
+                const durationSeconds = Math.floor(video.duration % 60);
+                timeDisplays[1].textContent = `${durationMinutes}:${durationSeconds < 10 ? '0' : ''}${durationSeconds}`;
+            });
+            
+            // Click on progress bar to seek
+            document.querySelector('.progress-bar').addEventListener('click', function(e) {
+                const progressBar = e.currentTarget;
+                const pos = (e.pageX - progressBar.getBoundingClientRect().left) / progressBar.offsetWidth;
+                video.currentTime = pos * video.duration;
+            });
+            
+            // Video item click functionality
             videoItems.forEach(item => {
                 item.addEventListener('click', function() {
-                    const src = this.getAttribute('data-src');
-                    const title = this.getAttribute('data-title');
+                    const videoSrc = this.getAttribute('data-video');
+                    const videoTitleText = this.getAttribute('data-title');
+                    const videoDuration = this.getAttribute('data-duration');
+                    const videoViews = this.getAttribute('data-views');
                     
-                    video.src = src;
-                    video.play();
-                    currentVideoTitle.textContent = title;
-                    playPauseBtn.textContent = '❚❚ Pause';
-                    playPauseBtn.classList.remove('play-btn');
+                    // Update main video
+                    video.classList.add('fade-in');
+                    video.poster = this.querySelector('img').src;
+                    video.src = videoSrc;
+                    video.load();
                     
-                    // සක්‍රිය වීඩියෝව උල්ලේඛනය කරන්න
-                    videoItems.forEach(v => v.classList.remove('active'));
-                    this.classList.add('active');
+                    // Update video info
+                    videoTitle.textContent = videoTitleText;
+                    videoStats.innerHTML = `<span>${videoDuration}</span><span>${videoViews}</span>`;
+                    
+                    // Reset and play the new video
+                    setTimeout(() => {
+                        video.play();
+                        playPauseIcon.classList.remove('fa-play');
+                        playPauseIcon.classList.add('fa-pause');
+                        video.classList.remove('fade-in');
+                    }, 300);
+                    
+                    // Highlight selected video
+                    videoItems.forEach(v => v.style.background = '');
+                    if (body.classList.contains('light-mode')) {
+                        this.style.background = '#e9ecef';
+                    } else {
+                        this.style.background = '#333';
+                    }
                 });
             });
             
-            // කාලය ආකෘතිගත කිරීම
-            function formatTime(seconds) {
-                let mins = Math.floor(seconds / 60);
-                let secs = Math.floor(seconds % 60);
-                secs = secs < 10 ? '0' + secs : secs;
-                return `${mins}:${secs}`;
+            // Initialize first video as active
+            if (body.classList.contains('light-mode')) {
+                videoItems[0].style.background = '#e9ecef';
+            } else {
+                videoItems[0].style.background = '#333';
             }
         });
     </script>
 </body>
-</html>
+    </html>
